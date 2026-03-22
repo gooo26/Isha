@@ -1,1 +1,1625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ISHA — Intelligent System for Human Assistance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════════
+   ROOT & RESET
+═══════════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:       #07080d;
+  --bg2:      #0d0f18;
+  --bg3:      #111420;
+  --card:     #0f1119;
+  --border:   rgba(100,120,255,0.13);
+  --accent:   #6c63ff;
+  --accent2:  #00d4ff;
+  --accent3:  #ff6584;
+  --gold:     #f5a623;
+  --text:     #e8eaf6;
+  --muted:    #6b7280;
+  --green:    #34d399;
+  --glow:     rgba(108,99,255,0.35);
+  --glow2:    rgba(0,212,255,0.25);
+  --font-head: 'Orbitron', monospace;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  font-size:16px;
+  line-height:1.7;
+  overflow-x:hidden;
+  cursor:none;
+}
+
+/* ═══════════════════════════════════════════════════
+   CUSTOM CURSOR
+═══════════════════════════════════════════════════ */
+#cursor{
+  width:12px;height:12px;
+  background:var(--accent2);
+  border-radius:50%;
+  position:fixed;top:0;left:0;
+  pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:transform .1s,background .2s;
+  box-shadow:0 0 16px var(--accent2),0 0 40px rgba(0,212,255,0.3);
+}
+#cursor-ring{
+  width:36px;height:36px;
+  border:1.5px solid rgba(108,99,255,0.5);
+  border-radius:50%;
+  position:fixed;top:0;left:0;
+  pointer-events:none;z-index:9998;
+  transform:translate(-50%,-50%);
+  transition:all .18s ease;
+}
+body:hover #cursor{opacity:1}
+
+/* ═══════════════════════════════════════════════════
+   CANVAS PARTICLES
+═══════════════════════════════════════════════════ */
+#particles{
+  position:fixed;top:0;left:0;
+  width:100%;height:100%;
+  pointer-events:none;z-index:0;
+  opacity:.45;
+}
+
+/* ═══════════════════════════════════════════════════
+   NOISE GRAIN OVERLAY
+═══════════════════════════════════════════════════ */
+body::after{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity:.022;
+  pointer-events:none;
+  z-index:1;
+}
+
+/* ═══════════════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════════════ */
+nav{
+  position:fixed;top:0;left:0;right:0;
+  z-index:100;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 5%;
+  height:68px;
+  background:rgba(7,8,13,0.82);
+  backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo{
+  font-family:var(--font-head);
+  font-size:1.25rem;
+  font-weight:900;
+  letter-spacing:0.18em;
+  color:var(--accent2);
+  text-shadow:0 0 20px rgba(0,212,255,0.5);
+}
+.nav-links{display:flex;gap:2rem;list-style:none}
+.nav-links a{
+  color:var(--muted);
+  text-decoration:none;
+  font-size:.875rem;
+  font-weight:500;
+  letter-spacing:.05em;
+  transition:color .2s;
+}
+.nav-links a:hover{color:var(--text)}
+.nav-badge{
+  font-family:var(--font-mono);
+  font-size:.7rem;
+  padding:3px 10px;
+  border:1px solid rgba(108,99,255,.4);
+  border-radius:20px;
+  color:var(--accent);
+  letter-spacing:.08em;
+}
+
+/* ═══════════════════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════════════════ */
+section{position:relative;z-index:2}
+.container{max-width:1100px;margin:0 auto;padding:0 5%}
+
+/* ═══════════════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════════════ */
+#hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  text-align:center;
+  padding:120px 5% 80px;
+  position:relative;
+  overflow:hidden;
+}
+.hero-glow{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-60%);
+  width:700px;height:700px;
+  background:radial-gradient(ellipse at center,rgba(108,99,255,.18) 0%,transparent 70%);
+  pointer-events:none;
+}
+.hero-glow2{
+  position:absolute;
+  top:60%;left:30%;
+  width:400px;height:400px;
+  background:radial-gradient(ellipse,rgba(0,212,255,.1) 0%,transparent 65%);
+  pointer-events:none;
+}
+.hero-tag{
+  display:inline-block;
+  font-family:var(--font-mono);
+  font-size:.72rem;
+  letter-spacing:.2em;
+  color:var(--accent2);
+  border:1px solid rgba(0,212,255,.3);
+  padding:5px 16px;
+  border-radius:20px;
+  margin-bottom:2rem;
+  animation:fadeSlideUp .8s ease both;
+  background:rgba(0,212,255,.04);
+}
+.hero-title{
+  font-family:var(--font-head);
+  font-size:clamp(3rem,8vw,7.5rem);
+  font-weight:900;
+  letter-spacing:0.08em;
+  line-height:1;
+  margin-bottom:.5rem;
+  animation:fadeSlideUp .9s .1s ease both;
+}
+.hero-title .i{ color:var(--accent2); text-shadow:0 0 40px rgba(0,212,255,.6) }
+.hero-title .s{ color:var(--text) }
+.hero-title .h{ color:var(--accent); text-shadow:0 0 40px rgba(108,99,255,.6) }
+.hero-title .a2{ color:var(--accent3); text-shadow:0 0 40px rgba(255,101,132,.5) }
+.hero-sub-title{
+  font-family:var(--font-head);
+  font-size:clamp(.65rem,1.5vw,1rem);
+  letter-spacing:.35em;
+  color:var(--muted);
+  margin-bottom:2.5rem;
+  animation:fadeSlideUp 1s .2s ease both;
+}
+.hero-sub-title span{
+  color:transparent;
+  background:linear-gradient(90deg,var(--accent2),var(--accent),var(--accent3));
+  -webkit-background-clip:text;background-clip:text;
+}
+.hero-desc{
+  max-width:600px;
+  font-size:1.05rem;
+  color:rgba(232,234,246,.65);
+  margin-bottom:3.5rem;
+  animation:fadeSlideUp 1s .3s ease both;
+  font-weight:300;
+}
+
+/* CTA BUTTONS */
+.cta-group{
+  display:flex;flex-wrap:wrap;gap:1rem;
+  justify-content:center;
+  animation:fadeSlideUp 1s .45s ease both;
+}
+.btn{
+  display:inline-flex;align-items:center;gap:.6rem;
+  padding:14px 32px;
+  border-radius:8px;
+  font-family:var(--font-head);
+  font-size:.78rem;
+  font-weight:700;
+  letter-spacing:.12em;
+  text-decoration:none;
+  cursor:pointer;
+  border:none;
+  transition:all .25s ease;
+  position:relative;
+  overflow:hidden;
+}
+.btn::before{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(120deg,transparent 40%,rgba(255,255,255,.08) 50%,transparent 60%);
+  transform:translateX(-100%);
+  transition:transform .5s;
+}
+.btn:hover::before{transform:translateX(100%)}
+
+.btn-download{
+  background:linear-gradient(135deg,var(--accent),#8b7cf8);
+  color:#fff;
+  box-shadow:0 0 30px rgba(108,99,255,.5),0 4px 20px rgba(0,0,0,.4);
+}
+.btn-download:hover{
+  transform:translateY(-3px) scale(1.03);
+  box-shadow:0 0 50px rgba(108,99,255,.7),0 8px 30px rgba(0,0,0,.5);
+}
+.btn-setup{
+  background:linear-gradient(135deg,#0099cc,var(--accent2));
+  color:#fff;
+  box-shadow:0 0 30px rgba(0,212,255,.4),0 4px 20px rgba(0,0,0,.4);
+}
+.btn-setup:hover{
+  transform:translateY(-3px) scale(1.03);
+  box-shadow:0 0 50px rgba(0,212,255,.6),0 8px 30px rgba(0,0,0,.5);
+}
+.btn-error{
+  background:transparent;
+  color:var(--accent3);
+  border:1.5px solid rgba(255,101,132,.4);
+  box-shadow:0 0 20px rgba(255,101,132,.15);
+}
+.btn-error:hover{
+  background:rgba(255,101,132,.08);
+  border-color:var(--accent3);
+  transform:translateY(-3px);
+  box-shadow:0 0 35px rgba(255,101,132,.3);
+}
+.btn-icon{font-size:1rem}
+
+/* HERO VISUAL — capsule mockup */
+.hero-visual{
+  margin-top:4rem;
+  animation:fadeSlideUp 1s .6s ease both;
+  position:relative;
+}
+.capsule-mockup{
+  display:flex;align-items:center;
+  background:linear-gradient(135deg,rgba(15,17,25,.9),rgba(17,20,32,.95));
+  border:1px solid rgba(108,99,255,.25);
+  border-radius:50px;
+  padding:10px 16px;
+  gap:10px;
+  width:460px;
+  box-shadow:0 0 60px rgba(108,99,255,.2),0 0 120px rgba(0,212,255,.08),inset 0 1px 0 rgba(255,255,255,.05);
+  backdrop-filter:blur(20px);
+}
+.cap-mic{
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(255,101,132,.15);
+  border:1.5px solid var(--accent3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;flex-shrink:0;
+  animation:pulse-mic 2s ease-in-out infinite;
+}
+.cap-bar{
+  flex:1;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(108,99,255,.2);
+  border-radius:8px;
+  padding:8px 14px;
+  font-family:var(--font-mono);
+  font-size:.75rem;
+  color:var(--accent2);
+  display:flex;align-items:center;gap:8px;
+}
+.cap-bar-text{
+  overflow:hidden;
+  white-space:nowrap;
+  border-right:2px solid var(--accent2);
+  animation:typewriter 3s steps(28) infinite, blink .7s step-end infinite alternate;
+  color:rgba(0,212,255,.8);
+}
+.cap-icone{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(245,166,35,.1);
+  border:1.5px solid var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.85rem;font-weight:900;color:var(--gold);flex-shrink:0;
+}
+.cap-settings{
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(0,212,255,.08);
+  border:1.5px solid rgba(0,212,255,.4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;flex-shrink:0;
+}
+.capsule-reflection{
+  position:absolute;bottom:-20px;left:50%;
+  transform:translateX(-50%);
+  width:300px;height:30px;
+  background:radial-gradient(ellipse,rgba(108,99,255,.2),transparent 70%);
+  filter:blur(8px);
+}
+
+/* STATS ROW */
+.stats-row{
+  display:flex;gap:3rem;justify-content:center;
+  margin-top:4rem;
+  animation:fadeSlideUp 1s .7s ease both;
+  flex-wrap:wrap;
+}
+.stat{text-align:center}
+.stat-num{
+  font-family:var(--font-head);
+  font-size:2rem;font-weight:900;
+  color:var(--accent2);
+}
+.stat-lbl{font-size:.75rem;color:var(--muted);letter-spacing:.1em;margin-top:.2rem}
+
+/* ═══════════════════════════════════════════════════
+   SECTION STYLES
+═══════════════════════════════════════════════════ */
+.section-label{
+  display:inline-block;
+  font-family:var(--font-mono);
+  font-size:.68rem;letter-spacing:.25em;
+  color:var(--accent);border:1px solid rgba(108,99,255,.3);
+  padding:4px 12px;border-radius:20px;
+  margin-bottom:1.2rem;
+  background:rgba(108,99,255,.05);
+}
+.section-title{
+  font-family:var(--font-head);
+  font-size:clamp(1.8rem,4vw,3rem);
+  font-weight:900;
+  letter-spacing:.04em;
+  line-height:1.15;
+  margin-bottom:1rem;
+}
+.section-title em{
+  font-style:normal;
+  color:transparent;
+  background:linear-gradient(90deg,var(--accent2),var(--accent));
+  -webkit-background-clip:text;background-clip:text;
+}
+.section-desc{
+  color:rgba(232,234,246,.55);
+  max-width:560px;
+  font-size:.95rem;
+  font-weight:300;
+}
+
+/* ═══════════════════════════════════════════════════
+   ABOUT SECTION
+═══════════════════════════════════════════════════ */
+#about{padding:120px 0}
+.about-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:5rem;
+  align-items:center;
+}
+.about-text{}
+.about-visual{position:relative}
+.acronym-stack{display:flex;flex-direction:column;gap:.6rem}
+.acronym-row{
+  display:flex;align-items:center;gap:1.2rem;
+  padding:14px 20px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background:var(--card);
+  transition:all .3s;
+  cursor:default;
+}
+.acronym-row:hover{
+  border-color:rgba(108,99,255,.4);
+  background:rgba(108,99,255,.06);
+  transform:translateX(6px);
+}
+.acr-letter{
+  font-family:var(--font-head);
+  font-size:1.6rem;
+  font-weight:900;
+  min-width:2.5rem;
+  text-align:center;
+}
+.acr-word{font-weight:500;font-size:.95rem}
+.acr-desc{font-size:.8rem;color:var(--muted);font-weight:300}
+.i-color{color:var(--accent2)}
+.s-color{color:var(--green)}
+.h-color{color:var(--accent)}
+.a-color{color:var(--accent3)}
+
+/* ═══════════════════════════════════════════════════
+   FEATURES
+═══════════════════════════════════════════════════ */
+#features{
+  padding:120px 0;
+  background:linear-gradient(180deg,transparent,rgba(108,99,255,.03),transparent);
+}
+.features-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1.5rem;
+  margin-top:4rem;
+}
+.feat-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:28px 24px;
+  transition:all .3s ease;
+  position:relative;
+  overflow:hidden;
+}
+.feat-card::before{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(108,99,255,.05),transparent);
+  opacity:0;transition:opacity .3s;
+}
+.feat-card:hover{
+  border-color:rgba(108,99,255,.35);
+  transform:translateY(-6px);
+  box-shadow:0 20px 60px rgba(0,0,0,.4),0 0 40px rgba(108,99,255,.12);
+}
+.feat-card:hover::before{opacity:1}
+.feat-icon{
+  font-size:2rem;margin-bottom:1rem;
+  display:block;
+}
+.feat-title{
+  font-family:var(--font-head);
+  font-size:.85rem;letter-spacing:.1em;
+  margin-bottom:.6rem;
+  color:var(--text);
+}
+.feat-desc{font-size:.875rem;color:var(--muted);font-weight:300;line-height:1.6}
+.feat-tag{
+  margin-top:1rem;
+  display:inline-block;
+  font-family:var(--font-mono);
+  font-size:.65rem;
+  padding:2px 8px;
+  border-radius:4px;
+  background:rgba(108,99,255,.12);
+  color:var(--accent);
+  letter-spacing:.05em;
+}
+.feat-tag.blue{background:rgba(0,212,255,.1);color:var(--accent2)}
+.feat-tag.green{background:rgba(52,211,153,.1);color:var(--green)}
+.feat-tag.pink{background:rgba(255,101,132,.1);color:var(--accent3)}
+.feat-tag.gold{background:rgba(245,166,35,.1);color:var(--gold)}
+
+/* ═══════════════════════════════════════════════════
+   COMMANDS SHOWCASE
+═══════════════════════════════════════════════════ */
+#commands{padding:120px 0}
+.commands-wrap{
+  display:grid;
+  grid-template-columns:1fr 1.5fr;
+  gap:4rem;
+  align-items:start;
+  margin-top:4rem;
+}
+.cmd-cats{display:flex;flex-direction:column;gap:.6rem}
+.cmd-cat{
+  padding:12px 18px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--card);
+  font-size:.875rem;
+  cursor:pointer;
+  transition:all .2s;
+  display:flex;align-items:center;gap:.8rem;
+}
+.cmd-cat.active,.cmd-cat:hover{
+  border-color:rgba(108,99,255,.5);
+  background:rgba(108,99,255,.08);
+  color:var(--accent2);
+}
+.cmd-cat-icon{font-size:1rem;width:1.5rem;text-align:center}
+.cmd-panel{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:28px;
+  min-height:400px;
+}
+.cmd-panel-title{
+  font-family:var(--font-head);
+  font-size:.85rem;letter-spacing:.1em;
+  margin-bottom:1.2rem;
+  color:var(--accent2);
+  display:none;
+}
+.cmd-panel-title.active{display:block}
+.cmd-list{display:none;flex-direction:column;gap:.5rem}
+.cmd-list.active{display:flex}
+.cmd-item{
+  display:flex;align-items:flex-start;gap:.8rem;
+  padding:10px 14px;
+  border-radius:8px;
+  background:rgba(255,255,255,.02);
+  border:1px solid rgba(255,255,255,.04);
+  transition:background .2s;
+}
+.cmd-item:hover{background:rgba(108,99,255,.06)}
+.cmd-pill{
+  font-family:var(--font-mono);
+  font-size:.72rem;
+  padding:3px 10px;
+  border-radius:4px;
+  background:rgba(0,212,255,.08);
+  color:var(--accent2);
+  white-space:nowrap;flex-shrink:0;
+  border:1px solid rgba(0,212,255,.15);
+}
+.cmd-res{font-size:.82rem;color:var(--muted);padding-top:.1rem}
+
+/* ═══════════════════════════════════════════════════
+   GESTURE SECTION
+═══════════════════════════════════════════════════ */
+#gesture{
+  padding:120px 0;
+  background:linear-gradient(180deg,transparent,rgba(0,212,255,.02),transparent);
+}
+.gesture-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:1rem;
+  margin-top:3rem;
+}
+.gesture-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:22px 16px;
+  text-align:center;
+  transition:all .3s;
+}
+.gesture-card:hover{
+  border-color:rgba(0,212,255,.35);
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(0,0,0,.3),0 0 30px rgba(0,212,255,.08);
+}
+.gesture-emoji{font-size:2.2rem;margin-bottom:.8rem;display:block}
+.gesture-name{
+  font-family:var(--font-head);
+  font-size:.72rem;letter-spacing:.08em;
+  margin-bottom:.4rem;color:var(--text);
+}
+.gesture-action{font-size:.78rem;color:var(--muted)}
+
+/* ═══════════════════════════════════════════════════
+   DOWNLOAD SECTION
+═══════════════════════════════════════════════════ */
+#download{
+  padding:120px 0;
+  text-align:center;
+}
+.download-box{
+  background:linear-gradient(135deg,rgba(15,17,25,.95),rgba(11,13,22,.98));
+  border:1px solid rgba(108,99,255,.25);
+  border-radius:24px;
+  padding:60px 40px;
+  position:relative;
+  overflow:hidden;
+  max-width:800px;
+  margin:0 auto;
+}
+.download-box::before{
+  content:'';
+  position:absolute;top:-100px;left:50%;
+  transform:translateX(-50%);
+  width:500px;height:300px;
+  background:radial-gradient(ellipse,rgba(108,99,255,.12),transparent 70%);
+  pointer-events:none;
+}
+.download-box::after{
+  content:'';
+  position:absolute;
+  inset:-1px;
+  border-radius:24px;
+  padding:1px;
+  background:linear-gradient(135deg,rgba(108,99,255,.3),rgba(0,212,255,.2),rgba(255,101,132,.15));
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;
+  mask-composite:exclude;
+  pointer-events:none;
+}
+.download-title{
+  font-family:var(--font-head);
+  font-size:clamp(1.4rem,3vw,2.2rem);
+  font-weight:900;letter-spacing:.06em;
+  margin-bottom:1rem;
+}
+.download-desc{
+  color:rgba(232,234,246,.55);
+  font-size:.95rem;font-weight:300;
+  max-width:480px;margin:0 auto 2.5rem;
+}
+.download-btn-group{
+  display:flex;flex-wrap:wrap;gap:1.2rem;
+  justify-content:center;margin-bottom:2rem;
+}
+.btn-dl-main{
+  background:linear-gradient(135deg,var(--accent),#8b7cf8);
+  color:#fff;
+  font-size:.82rem;
+  padding:16px 40px;
+  border-radius:10px;
+  font-family:var(--font-head);
+  letter-spacing:.12em;
+  font-weight:700;
+  text-decoration:none;
+  display:inline-flex;align-items:center;gap:.7rem;
+  border:none;cursor:pointer;
+  box-shadow:0 0 40px rgba(108,99,255,.5),0 8px 30px rgba(0,0,0,.4);
+  transition:all .25s;
+  position:relative;overflow:hidden;
+}
+.btn-dl-main::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(120deg,transparent 40%,rgba(255,255,255,.1) 50%,transparent 60%);
+  transform:translateX(-100%);transition:transform .5s;
+}
+.btn-dl-main:hover::before{transform:translateX(100%)}
+.btn-dl-main:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 0 60px rgba(108,99,255,.65),0 12px 40px rgba(0,0,0,.5)}
+.btn-setup-main{
+  background:linear-gradient(135deg,#006699,var(--accent2));
+  color:#fff;
+  font-size:.82rem;
+  padding:16px 36px;
+  border-radius:10px;
+  font-family:var(--font-head);
+  letter-spacing:.12em;
+  font-weight:700;
+  text-decoration:none;
+  display:inline-flex;align-items:center;gap:.7rem;
+  border:none;cursor:pointer;
+  box-shadow:0 0 30px rgba(0,212,255,.4),0 8px 30px rgba(0,0,0,.4);
+  transition:all .25s;
+  position:relative;overflow:hidden;
+}
+.btn-setup-main::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(120deg,transparent 40%,rgba(255,255,255,.1) 50%,transparent 60%);
+  transform:translateX(-100%);transition:transform .5s;
+}
+.btn-setup-main:hover::before{transform:translateX(100%)}
+.btn-setup-main:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 0 50px rgba(0,212,255,.55),0 12px 40px rgba(0,0,0,.5)}
+.btn-err-main{
+  background:transparent;
+  color:var(--accent3);
+  border:1.5px solid rgba(255,101,132,.4);
+  font-size:.82rem;
+  padding:15px 32px;
+  border-radius:10px;
+  font-family:var(--font-head);
+  letter-spacing:.12em;
+  font-weight:700;
+  text-decoration:none;
+  display:inline-flex;align-items:center;gap:.7rem;
+  cursor:pointer;
+  box-shadow:0 0 20px rgba(255,101,132,.1);
+  transition:all .25s;
+}
+.btn-err-main:hover{
+  background:rgba(255,101,132,.08);
+  border-color:var(--accent3);
+  transform:translateY(-3px);
+  box-shadow:0 0 40px rgba(255,101,132,.3);
+}
+.download-note{
+  font-size:.78rem;color:var(--muted);
+  font-family:var(--font-mono);
+  display:flex;align-items:center;gap:1rem;justify-content:center;
+  flex-wrap:wrap;
+}
+.note-dot{color:var(--green)}
+
+/* ═══════════════════════════════════════════════════
+   REQUIREMENTS
+═══════════════════════════════════════════════════ */
+#requirements{padding:80px 0 120px}
+.req-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:1.5rem;
+  margin-top:3rem;
+}
+.req-card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:24px;
+}
+.req-card-title{
+  font-family:var(--font-head);
+  font-size:.8rem;letter-spacing:.12em;
+  color:var(--accent);margin-bottom:1rem;
+  display:flex;align-items:center;gap:.6rem;
+}
+.req-list{list-style:none;display:flex;flex-direction:column;gap:.5rem}
+.req-list li{
+  font-size:.85rem;color:var(--muted);
+  padding-left:1.2rem;
+  position:relative;
+}
+.req-list li::before{
+  content:'›';
+  position:absolute;left:0;
+  color:var(--accent2);font-weight:700;
+}
+.req-list li strong{color:var(--text)}
+
+/* ═══════════════════════════════════════════════════
+   FAQ / ERRORS
+═══════════════════════════════════════════════════ */
+#errors{padding:120px 0}
+.faq-list{
+  display:flex;flex-direction:column;
+  gap:1rem;margin-top:3rem;
+  max-width:760px;
+}
+.faq-item{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+}
+.faq-q{
+  padding:18px 22px;
+  cursor:pointer;
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:.9rem;font-weight:500;
+  transition:background .2s;
+}
+.faq-q:hover{background:rgba(108,99,255,.05)}
+.faq-chevron{
+  font-size:.7rem;color:var(--accent);
+  transition:transform .3s;flex-shrink:0;
+}
+.faq-item.open .faq-chevron{transform:rotate(180deg)}
+.faq-a{
+  max-height:0;overflow:hidden;
+  transition:max-height .35s ease,padding .3s;
+  font-size:.85rem;color:var(--muted);
+  padding:0 22px;font-weight:300;line-height:1.7;
+}
+.faq-item.open .faq-a{max-height:300px;padding:0 22px 18px}
+.faq-code{
+  font-family:var(--font-mono);
+  font-size:.75rem;
+  background:rgba(0,0,0,.4);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:6px;
+  padding:10px 14px;
+  margin-top:.8rem;
+  display:block;
+  color:var(--accent2);
+}
+
+/* ═══════════════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════════════ */
+footer{
+  border-top:1px solid var(--border);
+  padding:48px 5%;
+  text-align:center;
+  position:relative;z-index:2;
+}
+.footer-logo{
+  font-family:var(--font-head);
+  font-size:1.5rem;font-weight:900;
+  letter-spacing:.2em;
+  color:var(--accent2);
+  margin-bottom:.8rem;
+  text-shadow:0 0 30px rgba(0,212,255,.4);
+}
+.footer-sub{font-size:.78rem;color:var(--muted);letter-spacing:.08em}
+.footer-links{
+  display:flex;gap:2rem;justify-content:center;
+  margin-top:1.5rem;list-style:none;
+}
+.footer-links a{font-size:.8rem;color:var(--muted);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:var(--text)}
+
+/* ═══════════════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════════════ */
+@keyframes fadeSlideUp{
+  from{opacity:0;transform:translateY(28px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes pulse-mic{
+  0%,100%{box-shadow:0 0 0 0 rgba(255,101,132,.4)}
+  50%{box-shadow:0 0 0 10px rgba(255,101,132,0)}
+}
+@keyframes typewriter{
+  0%,100%{width:0}
+  20%,80%{width:100%}
+}
+@keyframes blink{
+  from{border-right-color:var(--accent2)}
+  to{border-right-color:transparent}
+}
+@keyframes float{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-12px)}
+}
+.float{animation:float 5s ease-in-out infinite}
+
+/* scroll reveal */
+.reveal{
+  opacity:0;transform:translateY(30px);
+  transition:opacity .7s ease,transform .7s ease;
+}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ═══════════════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════════════ */
+@media(max-width:900px){
+  .features-grid{grid-template-columns:repeat(2,1fr)}
+  .about-grid{grid-template-columns:1fr}
+  .commands-wrap{grid-template-columns:1fr}
+  .gesture-grid{grid-template-columns:repeat(2,1fr)}
+  .req-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .features-grid{grid-template-columns:1fr}
+  .gesture-grid{grid-template-columns:repeat(2,1fr)}
+  .capsule-mockup{width:95vw}
+  .nav-links{display:none}
+  .cta-group{flex-direction:column;align-items:center}
+  .download-btn-group{flex-direction:column;align-items:center}
+  body{cursor:auto}
+  #cursor,#cursor-ring{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- PARTICLES CANVAS -->
+<canvas id="particles"></canvas>
+
+<!-- ══════ NAV ══════ -->
+<nav>
+  <div class="nav-logo">ISHA</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#commands">Commands</a></li>
+    <li><a href="#gesture">Gesture</a></li>
+    <li><a href="#download">Download</a></li>
+    <li><a href="#errors">Help</a></li>
+  </ul>
+  <div class="nav-badge">v1.0 — WINDOWS</div>
+</nav>
+
+<!-- ══════ HERO ══════ -->
+<section id="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="container" style="display:flex;flex-direction:column;align-items:center">
+    <div class="hero-tag">▸ OFFLINE AI · NO API KEY REQUIRED</div>
+    <h1 class="hero-title">
+      <span class="i">I</span><span class="s">S</span><span class="h">H</span><span class="a2">A</span>
+    </h1>
+    <p class="hero-sub-title"><span>Intelligent System for Human Assistance</span></p>
+    <p class="hero-desc">
+      A fully offline, female AI voice assistant for Windows — control your entire PC with your voice, text, or hand gestures. No internet. No API keys. No limits.
+    </p>
+    <div class="cta-group">
+      <a href="https://github.com/" class="btn btn-download" target="_blank">
+        <span class="btn-icon">⬇</span> DOWNLOAD ISHA
+      </a>
+      <a href="https://github.com/" class="btn btn-setup" target="_blank">
+        <span class="btn-icon">⚙</span> SETUP (.EXE)
+      </a>
+      <a href="#errors" class="btn btn-error">
+        <span class="btn-icon">⚠</span> ERROR FIXES
+      </a>
+    </div>
+
+    <!-- Capsule Mockup -->
+    <div class="hero-visual float">
+      <div class="capsule-mockup">
+        <div class="cap-mic">🎙️</div>
+        <div class="cap-bar">
+          <span style="color:var(--muted);font-size:.65rem">›</span>
+          <span class="cap-bar-text">Play Arijit Singh songs...</span>
+        </div>
+        <div class="cap-icone">!</div>
+        <div class="cap-settings">⚙️</div>
+      </div>
+      <div class="capsule-reflection"></div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-num">40+</div>
+        <div class="stat-lbl">APPS SUPPORTED</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">60+</div>
+        <div class="stat-lbl">SETTINGS CONTROL</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">0</div>
+        <div class="stat-lbl">API KEYS NEEDED</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">10+</div>
+        <div class="stat-lbl">GESTURE CONTROLS</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ ABOUT ══════ -->
+<section id="about">
+  <div class="container">
+    <div class="about-grid reveal">
+      <div class="about-text">
+        <div class="section-label">// ABOUT ISHA</div>
+        <h2 class="section-title">More than an assistant.<br><em>Your digital brain.</em></h2>
+        <p class="section-desc" style="margin-bottom:1.5rem">
+          ISHA is a personal AI assistant built entirely in Python — designed to live on your Windows PC and understand you in natural Hinglish or English. She runs completely offline, remembers your preferences, and controls every aspect of your computer.
+        </p>
+        <p class="section-desc">
+          From opening apps to playing music on YouTube, solving math problems to controlling your mouse with gestures — ISHA does it all through a beautiful floating capsule GUI that sits at the bottom of your screen, always ready.
+        </p>
+      </div>
+      <div class="about-visual">
+        <div class="acronym-stack">
+          <div class="acronym-row">
+            <div class="acr-letter i-color">I</div>
+            <div>
+              <div class="acr-word">Intelligent</div>
+              <div class="acr-desc">Understands Hinglish, fuzzy commands & natural language</div>
+            </div>
+          </div>
+          <div class="acronym-row">
+            <div class="acr-letter s-color">S</div>
+            <div>
+              <div class="acr-word">System</div>
+              <div class="acr-desc">Deep integration with Windows OS — settings, apps, shortcuts</div>
+            </div>
+          </div>
+          <div class="acronym-row">
+            <div class="acr-letter h-color">H</div>
+            <div>
+              <div class="acr-word">Human</div>
+              <div class="acr-desc">Built for real people — voice, text & gesture interaction</div>
+            </div>
+          </div>
+          <div class="acronym-row">
+            <div class="acr-letter a-color">A</div>
+            <div>
+              <div class="acr-word">Assistance</div>
+              <div class="acr-desc">Proactive help — memory, alarms, reminders & more</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ FEATURES ══════ -->
+<section id="features">
+  <div class="container">
+    <div class="reveal" style="text-align:center;margin-bottom:.5rem">
+      <div class="section-label">// CORE FEATURES</div>
+      <h2 class="section-title">Everything you need.<br><em>Nothing you don't.</em></h2>
+    </div>
+    <div class="features-grid reveal">
+
+      <div class="feat-card">
+        <span class="feat-icon">🎙️</span>
+        <div class="feat-title">VOICE CONTROL</div>
+        <p class="feat-desc">Speak in Hinglish or English. ISHA understands natural commands, fuzzy phrasing, and wake-word detection ("Isha, open Chrome").</p>
+        <span class="feat-tag blue">OFFLINE STT</span>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">🧠</span>
+        <div class="feat-title">LOCAL AI BRAIN</div>
+        <p class="feat-desc">Zero API calls. ISHA's intelligence runs entirely on your machine — smart reply engine, intent detection, fuzzy matching, and persistent memory.</p>
+        <span class="feat-tag">NO INTERNET NEEDED</span>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">👋</span>
+        <div class="feat-title">GESTURE CONTROL</div>
+        <p class="feat-desc">Control your PC with your hands via webcam. Air mouse, pinch to click, fist to screenshot, swipe to switch apps — powered by MediaPipe.</p>
+        <span class="feat-tag green">MEDIAPIPE + CV2</span>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">⚡</span>
+        <div class="feat-title">APP & SETTINGS LAUNCHER</div>
+        <p class="feat-desc">Launch 40+ apps and open 60+ Windows settings instantly. The "!" popup gives you a searchable list of everything on your PC.</p>
+        <span class="feat-tag blue">FUZZY MATCH</span>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">🎵</span>
+        <div class="feat-title">YOUTUBE MUSIC</div>
+        <p class="feat-desc">Say "Play Bollywood songs" or "Chalao Arijit Singh" and ISHA will auto-search and play on YouTube. Controls include next, previous, stop, volume.</p>
+        <span class="feat-tag pink">PYWHATKIT</span>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">💾</span>
+        <div class="feat-title">PERSISTENT MEMORY</div>
+        <p class="feat-desc">Tell ISHA anything to remember — she saves it to a local JSON file and recalls it in future sessions. No cloud. No data sharing.</p>
+        <span class="feat-tag gold">LOCAL ONLY</span>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">🧮</span>
+        <div class="feat-title">MATH SOLVER</div>
+        <p class="feat-desc">Solve complex equations, square roots, decimals, π, and more. Powered by SymPy for precise symbolic computation — no calculator needed.</p>
+        <span class="feat-tag green">SYMPY ENGINE</span>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">⏰</span>
+        <div class="feat-title">ALARMS & REMINDERS</div>
+        <p class="feat-desc">Set alarms for specific times or reminders with a delay. Background threads keep watching the clock even while you work on other things.</p>
+        <span class="feat-tag">BACKGROUND THREADS</span>
+      </div>
+
+      <div class="feat-card">
+        <span class="feat-icon">📸</span>
+        <div class="feat-title">SCREENSHOT & RECORDING</div>
+        <p class="feat-desc">Instantly capture screenshots with unique timestamps. Record your screen for any duration. Take selfies from your webcam — all by voice command.</p>
+        <span class="feat-tag pink">PYAUTOGUI + CV2</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════ COMMANDS ══════ -->
+<section id="commands">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">// VOICE COMMANDS</div>
+      <h2 class="section-title">Talk to ISHA <em>naturally.</em></h2>
+      <p class="section-desc">Hinglish, English, or a mix — ISHA understands how real people speak.</p>
+    </div>
+    <div class="commands-wrap reveal">
+      <div class="cmd-cats" id="catList">
+        <div class="cmd-cat active" data-cat="apps"><span class="cmd-cat-icon">🚀</span> Apps & Settings</div>
+        <div class="cmd-cat" data-cat="web"><span class="cmd-cat-icon">🌐</span> Web & YouTube</div>
+        <div class="cmd-cat" data-cat="system"><span class="cmd-cat-icon">💻</span> System Control</div>
+        <div class="cmd-cat" data-cat="media"><span class="cmd-cat-icon">📸</span> Media</div>
+        <div class="cmd-cat" data-cat="utility"><span class="cmd-cat-icon">🛠️</span> Utility</div>
+        <div class="cmd-cat" data-cat="mouse"><span class="cmd-cat-icon">🖱️</span> Mouse Control</div>
+        <div class="cmd-cat" data-cat="memory"><span class="cmd-cat-icon">🧠</span> Memory & Chat</div>
+      </div>
+      <div class="cmd-panel">
+
+        <!-- Apps -->
+        <div class="cmd-panel-title active" id="title-apps">🚀 APPS &amp; SETTINGS</div>
+        <div class="cmd-list active" id="list-apps">
+          <div class="cmd-item"><span class="cmd-pill">open chrome</span><span class="cmd-res">Launches Google Chrome</span></div>
+          <div class="cmd-item"><span class="cmd-pill">kholo calculator</span><span class="cmd-res">Opens Windows Calculator</span></div>
+          <div class="cmd-item"><span class="cmd-pill">launch word</span><span class="cmd-res">Opens Microsoft Word</span></div>
+          <div class="cmd-item"><span class="cmd-pill">open notepad</span><span class="cmd-res">Launches Notepad</span></div>
+          <div class="cmd-item"><span class="cmd-pill">display settings kholo</span><span class="cmd-res">Opens Display Settings</span></div>
+          <div class="cmd-item"><span class="cmd-pill">wifi settings</span><span class="cmd-res">Opens Wi-Fi Settings page</span></div>
+          <div class="cmd-item"><span class="cmd-pill">bluetooth setting</span><span class="cmd-res">Opens Bluetooth &amp; Devices</span></div>
+          <div class="cmd-item"><span class="cmd-pill">open task manager</span><span class="cmd-res">Launches Task Manager</span></div>
+        </div>
+
+        <!-- Web -->
+        <div class="cmd-panel-title" id="title-web">🌐 WEB &amp; YOUTUBE</div>
+        <div class="cmd-list" id="list-web">
+          <div class="cmd-item"><span class="cmd-pill">open youtube</span><span class="cmd-res">Opens YouTube in browser</span></div>
+          <div class="cmd-item"><span class="cmd-pill">play Arijit Singh</span><span class="cmd-res">Auto-plays on YouTube</span></div>
+          <div class="cmd-item"><span class="cmd-pill">gaana chalao Bollywood</span><span class="cmd-res">Plays Bollywood songs</span></div>
+          <div class="cmd-item"><span class="cmd-pill">search python tutorial</span><span class="cmd-res">Google searches the topic</span></div>
+          <div class="cmd-item"><span class="cmd-pill">open instagram</span><span class="cmd-res">Opens Instagram in browser</span></div>
+          <div class="cmd-item"><span class="cmd-pill">open whatsapp</span><span class="cmd-res">Opens WhatsApp Web</span></div>
+          <div class="cmd-item"><span class="cmd-pill">next song</span><span class="cmd-res">YouTube keyboard: Shift+N</span></div>
+          <div class="cmd-item"><span class="cmd-pill">song band karo</span><span class="cmd-res">Pauses YouTube playback</span></div>
+        </div>
+
+        <!-- System -->
+        <div class="cmd-panel-title" id="title-system">💻 SYSTEM CONTROL</div>
+        <div class="cmd-list" id="list-system">
+          <div class="cmd-item"><span class="cmd-pill">volume up</span><span class="cmd-res">Increases system volume</span></div>
+          <div class="cmd-item"><span class="cmd-pill">aawaz kam karo</span><span class="cmd-res">Decreases system volume</span></div>
+          <div class="cmd-item"><span class="cmd-pill">mute</span><span class="cmd-res">Mutes all audio</span></div>
+          <div class="cmd-item"><span class="cmd-pill">lock screen</span><span class="cmd-res">Locks PC (Win+L)</span></div>
+          <div class="cmd-item"><span class="cmd-pill">shutdown</span><span class="cmd-res">Shuts down in 30 seconds</span></div>
+          <div class="cmd-item"><span class="cmd-pill">restart</span><span class="cmd-res">Reboots in 30 seconds</span></div>
+          <div class="cmd-item"><span class="cmd-pill">select all</span><span class="cmd-res">Ctrl+A shortcut</span></div>
+          <div class="cmd-item"><span class="cmd-pill">close window</span><span class="cmd-res">Alt+F4 shortcut</span></div>
+        </div>
+
+        <!-- Media -->
+        <div class="cmd-panel-title" id="title-media">📸 MEDIA</div>
+        <div class="cmd-list" id="list-media">
+          <div class="cmd-item"><span class="cmd-pill">screenshot</span><span class="cmd-res">Saves to /screenshots/ folder</span></div>
+          <div class="cmd-item"><span class="cmd-pill">record screen 30 seconds</span><span class="cmd-res">Records 30s screen video</span></div>
+          <div class="cmd-item"><span class="cmd-pill">selfie lo</span><span class="cmd-res">Captures webcam photo</span></div>
+          <div class="cmd-item"><span class="cmd-pill">photo khicho</span><span class="cmd-res">Same as selfie command</span></div>
+        </div>
+
+        <!-- Utility -->
+        <div class="cmd-panel-title" id="title-utility">🛠️ UTILITY</div>
+        <div class="cmd-list" id="list-utility">
+          <div class="cmd-item"><span class="cmd-pill">time kya hai</span><span class="cmd-res">Tells current time</span></div>
+          <div class="cmd-item"><span class="cmd-pill">aaj ki date batao</span><span class="cmd-res">Tells today's date</span></div>
+          <div class="cmd-item"><span class="cmd-pill">calculate 25 * 4</span><span class="cmd-res">Solves math: returns 100</span></div>
+          <div class="cmd-item"><span class="cmd-pill">solve √144</span><span class="cmd-res">Returns 12</span></div>
+          <div class="cmd-item"><span class="cmd-pill">alarm 07:30 set karo</span><span class="cmd-res">Sets alarm for 7:30 AM</span></div>
+          <div class="cmd-item"><span class="cmd-pill">10 second baad pani piyo</span><span class="cmd-res">Sets 10s reminder</span></div>
+          <div class="cmd-item"><span class="cmd-pill">IP batao</span><span class="cmd-res">Shows local IP address</span></div>
+          <div class="cmd-item"><span class="cmd-pill">internet speed check karo</span><span class="cmd-res">Runs speed test</span></div>
+        </div>
+
+        <!-- Mouse -->
+        <div class="cmd-panel-title" id="title-mouse">🖱️ MOUSE CONTROL</div>
+        <div class="cmd-list" id="list-mouse">
+          <div class="cmd-item"><span class="cmd-pill">left click</span><span class="cmd-res">Single left mouse click</span></div>
+          <div class="cmd-item"><span class="cmd-pill">right click</span><span class="cmd-res">Right mouse click</span></div>
+          <div class="cmd-item"><span class="cmd-pill">double click</span><span class="cmd-res">Double click at cursor</span></div>
+          <div class="cmd-item"><span class="cmd-pill">scroll up</span><span class="cmd-res">Scrolls page upward</span></div>
+          <div class="cmd-item"><span class="cmd-pill">scroll down</span><span class="cmd-res">Scrolls page downward</span></div>
+        </div>
+
+        <!-- Memory -->
+        <div class="cmd-panel-title" id="title-memory">🧠 MEMORY &amp; CHAT</div>
+        <div class="cmd-list" id="list-memory">
+          <div class="cmd-item"><span class="cmd-pill">remember my name is Raj</span><span class="cmd-res">Saves to isha_memory.json</span></div>
+          <div class="cmd-item"><span class="cmd-pill">kya yaad hai</span><span class="cmd-res">Recalls last 5 memories</span></div>
+          <div class="cmd-item"><span class="cmd-pill">hello / hi / hey</span><span class="cmd-res">Friendly greeting response</span></div>
+          <div class="cmd-item"><span class="cmd-pill">who are you</span><span class="cmd-res">ISHA introduces herself</span></div>
+          <div class="cmd-item"><span class="cmd-pill">what can you do</span><span class="cmd-res">Lists all capabilities</span></div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ GESTURE ══════ -->
+<section id="gesture">
+  <div class="container">
+    <div class="reveal" style="text-align:center">
+      <div class="section-label">// GESTURE CONTROL</div>
+      <h2 class="section-title">Control with your <em>hands.</em></h2>
+      <p class="section-desc" style="margin:0 auto">Point your webcam and use hand gestures to control your entire PC — no touch required.</p>
+    </div>
+    <div class="gesture-grid reveal">
+      <div class="gesture-card">
+        <span class="gesture-emoji">✋</span>
+        <div class="gesture-name">OPEN PALM</div>
+        <div class="gesture-action">Toggle gesture mode ON / OFF</div>
+      </div>
+      <div class="gesture-card">
+        <span class="gesture-emoji">☝️</span>
+        <div class="gesture-name">INDEX FINGER</div>
+        <div class="gesture-action">Air mouse — move cursor</div>
+      </div>
+      <div class="gesture-card">
+        <span class="gesture-emoji">🤏</span>
+        <div class="gesture-name">PINCH</div>
+        <div class="gesture-action">Click &amp; drag</div>
+      </div>
+      <div class="gesture-card">
+        <span class="gesture-emoji">✊</span>
+        <div class="gesture-name">FIST</div>
+        <div class="gesture-action">Take screenshot</div>
+      </div>
+      <div class="gesture-card">
+        <span class="gesture-emoji">✌️</span>
+        <div class="gesture-name">TWO FINGERS</div>
+        <div class="gesture-action">Capture webcam photo</div>
+      </div>
+      <div class="gesture-card">
+        <span class="gesture-emoji">👍</span>
+        <div class="gesture-name">THUMB UP</div>
+        <div class="gesture-action">Volume up</div>
+      </div>
+      <div class="gesture-card">
+        <span class="gesture-emoji">👎</span>
+        <div class="gesture-name">THUMB DOWN</div>
+        <div class="gesture-action">Volume down</div>
+      </div>
+      <div class="gesture-card">
+        <span class="gesture-emoji">👋</span>
+        <div class="gesture-name">SWIPE LEFT/RIGHT</div>
+        <div class="gesture-action">Switch windows (Alt+Tab)</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ DOWNLOAD ══════ -->
+<section id="download">
+  <div class="container">
+    <div class="download-box reveal">
+      <div class="download-title">Get ISHA — Free Forever</div>
+      <p class="download-desc">Download the full Python source code or grab the ready-to-run .exe installer for Windows. No account needed.</p>
+      <div class="download-btn-group">
+        <a href="https://github.com/" class="btn-dl-main" target="_blank">
+          ⬇ &nbsp;DOWNLOAD ISHA (Source)
+        </a>
+        <a href="https://github.com/" class="btn-setup-main" target="_blank">
+          ⚙ &nbsp;SETUP (.EXE Installer)
+        </a>
+        <a href="#errors" class="btn-err-main">
+          ⚠ &nbsp;ERROR FIXES
+        </a>
+      </div>
+      <div class="download-note">
+        <span><span class="note-dot">●</span> Windows 10 / 11</span>
+        <span><span class="note-dot">●</span> Python 3.9+</span>
+        <span><span class="note-dot">●</span> 100% Offline</span>
+        <span><span class="note-dot">●</span> Open Source</span>
+        <span><span class="note-dot">●</span> Free Forever</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ REQUIREMENTS ══════ -->
+<section id="requirements">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">// SYSTEM REQUIREMENTS</div>
+      <h2 class="section-title">What you <em>need</em> to run ISHA.</h2>
+    </div>
+    <div class="req-grid reveal">
+      <div class="req-card">
+        <div class="req-card-title">💻 System</div>
+        <ul class="req-list">
+          <li><strong>OS:</strong> Windows 10 or Windows 11</li>
+          <li><strong>Python:</strong> 3.9 or higher</li>
+          <li><strong>RAM:</strong> 2 GB minimum (4 GB recommended)</li>
+          <li><strong>Disk:</strong> ~500 MB (including dependencies)</li>
+          <li><strong>Webcam:</strong> Optional (for gesture + selfie)</li>
+          <li><strong>Microphone:</strong> Optional (for voice mode)</li>
+        </ul>
+      </div>
+      <div class="req-card">
+        <div class="req-card-title">📦 Python Packages</div>
+        <ul class="req-list">
+          <li><strong>pyttsx3</strong> — offline text-to-speech</li>
+          <li><strong>SpeechRecognition</strong> — voice input</li>
+          <li><strong>pyaudio</strong> — microphone backend</li>
+          <li><strong>pyautogui</strong> — keyboard &amp; mouse control</li>
+          <li><strong>sympy</strong> — math solver</li>
+          <li><strong>opencv-python + mediapipe</strong> — gesture mode</li>
+          <li><strong>pywhatkit</strong> — YouTube auto-play</li>
+          <li><strong>psutil</strong> — battery &amp; CPU info</li>
+        </ul>
+      </div>
+      <div class="req-card">
+        <div class="req-card-title">⚡ Quick Install</div>
+        <ul class="req-list">
+          <li>Download the ZIP and extract it</li>
+          <li>Open a terminal in the folder</li>
+          <li>Run the install command below</li>
+          <li>Then run <strong>python main.py</strong></li>
+          <li>ISHA will appear at the bottom of your screen</li>
+          <li>Drag it anywhere you like!</li>
+        </ul>
+        <code class="faq-code">pip install -r requirements.txt</code>
+      </div>
+      <div class="req-card">
+        <div class="req-card-title">🗂️ File Structure</div>
+        <ul class="req-list">
+          <li><strong>main.py</strong> — Start here</li>
+          <li><strong>gui.py</strong> — Floating capsule UI</li>
+          <li><strong>brain.py</strong> — All AI logic</li>
+          <li><strong>voice.py</strong> — TTS + Speech recognition</li>
+          <li><strong>gesture.py</strong> — Hand gesture control</li>
+          <li><strong>requirements.txt</strong> — All dependencies</li>
+          <li><strong>isha_memory.json</strong> — Auto-created memory</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ ERROR FIXES ══════ -->
+<section id="errors">
+  <div class="container">
+    <div class="reveal">
+      <div class="section-label">// ERROR FIXES &amp; HELP</div>
+      <h2 class="section-title">Something not working? <em>We've got you.</em></h2>
+      <p class="section-desc">Common issues and how to fix them in seconds.</p>
+    </div>
+    <div class="faq-list reveal">
+
+      <div class="faq-item">
+        <div class="faq-q">
+          <span>❌ Error: "No module named 'pyttsx3'" or no voice output</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a">
+          This means the text-to-speech library isn't installed. Open a terminal and run:
+          <code class="faq-code">pip install pyttsx3</code>
+          If ISHA speaks in a male voice, edit voice.py and change the voice index from 1 to 0, or search your system voices for "Zira" (Microsoft's female voice).
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          <span>❌ Error: "No module named 'speech_recognition'" or mic not working</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a">
+          Install the speech recognition and microphone backend libraries:
+          <code class="faq-code">pip install SpeechRecognition pyaudio</code>
+          If pyaudio fails on Windows, try: <br>
+          <code class="faq-code">pip install pipwin &amp;&amp; pipwin install pyaudio</code>
+          Make sure your microphone is set as the default recording device in Windows Sound Settings.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          <span>❌ Gesture control not working — "No module named 'cv2'"</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a">
+          OpenCV and MediaPipe are required for gesture mode. Install them:
+          <code class="faq-code">pip install opencv-python mediapipe</code>
+          Make sure your webcam is connected and not being used by another app. Gesture mode is optional — ISHA works without it.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          <span>❌ YouTube song not playing — pywhatkit error</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a">
+          Install pywhatkit and make sure you have an active internet connection for YouTube:
+          <code class="faq-code">pip install pywhatkit</code>
+          If it still fails, ISHA will automatically fall back to opening a YouTube browser search instead.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          <span>❌ Math solver error — "No module named 'sympy'"</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a">
+          SymPy handles all math calculations. Install it with:
+          <code class="faq-code">pip install sympy</code>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          <span>❌ GUI won't open — tkinter error on Python</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a">
+          Tkinter is built into Python on Windows. If you're seeing errors, try reinstalling Python from python.org and make sure you check "tcl/tk and IDLE" during installation. Also ensure you're using Python 3.9 or higher.
+          <code class="faq-code">python --version  # Should be 3.9+</code>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          <span>❌ Battery / CPU info not showing — psutil missing</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a">
+          Install the system monitoring library:
+          <code class="faq-code">pip install psutil</code>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          <span>❌ Internet speed test failing — speedtest-cli error</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a">
+          Install the correct version of speedtest:
+          <code class="faq-code">pip install speedtest-cli</code>
+          Note: Requires an active internet connection to run the speed test.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">
+          <span>❌ All-in-one fix — just reinstall everything</span>
+          <span class="faq-chevron">▼</span>
+        </div>
+        <div class="faq-a">
+          If multiple things are broken, run the full requirements install from the project folder:
+          <code class="faq-code">pip install -r requirements.txt</code>
+          This will install all packages at once. Restart ISHA after installation.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════ FOOTER ══════ -->
+<footer>
+  <div class="footer-logo">ISHA</div>
+  <div class="footer-sub">INTELLIGENT SYSTEM FOR HUMAN ASSISTANCE — v1.0</div>
+  <ul class="footer-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#commands">Commands</a></li>
+    <li><a href="#download">Download</a></li>
+    <li><a href="#errors">Help</a></li>
+    <li><a href="https://github.com/" target="_blank">GitHub</a></li>
+  </ul>
+  <p style="margin-top:1.5rem;font-size:.72rem;color:rgba(107,114,128,.5)">Built with Python · Runs offline · Free forever</p>
+</footer>
+
+<!-- ══════ SCRIPTS ══════ -->
+<script>
+/* ── CURSOR ── */
+const cursor = document.getElementById('cursor');
+const ring   = document.getElementById('cursor-ring');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top  = e.clientY + 'px';
+  ring.style.left   = e.clientX + 'px';
+  ring.style.top    = e.clientY + 'px';
+});
+document.querySelectorAll('a,button,.btn,.cmd-cat,.faq-q,.acronym-row').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    cursor.style.transform = 'translate(-50%,-50%) scale(2)';
+    ring.style.transform   = 'translate(-50%,-50%) scale(1.5)';
+    ring.style.borderColor = 'rgba(108,99,255,.6)';
+  });
+  el.addEventListener('mouseleave', () => {
+    cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+    ring.style.transform   = 'translate(-50%,-50%) scale(1)';
+    ring.style.borderColor = 'rgba(108,99,255,.5)';
+  });
+});
+
+/* ── PARTICLES ── */
+const canvas = document.getElementById('particles');
+const ctx    = canvas.getContext('2d');
+let W, H, particles;
+
+function resize() {
+  W = canvas.width  = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', () => { resize(); initParticles(); });
+
+function initParticles() {
+  particles = Array.from({length: 80}, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: Math.random() * 1.5 + 0.3,
+    vx: (Math.random() - 0.5) * 0.25,
+    vy: (Math.random() - 0.5) * 0.25,
+    alpha: Math.random() * 0.5 + 0.1,
+    color: Math.random() > 0.6 ? '108,99,255' : Math.random() > 0.5 ? '0,212,255' : '255,101,132'
+  }));
+}
+initParticles();
+
+function drawParticles() {
+  ctx.clearRect(0, 0, W, H);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+    if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(${p.color},${p.alpha})`;
+    ctx.fill();
+  });
+  // draw lines between close particles
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 110) {
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.strokeStyle = `rgba(108,99,255,${0.06 * (1 - dist/110)})`;
+        ctx.lineWidth = 0.6;
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+/* ── COMMAND TABS ── */
+document.querySelectorAll('.cmd-cat').forEach(cat => {
+  cat.addEventListener('click', () => {
+    const key = cat.dataset.cat;
+    document.querySelectorAll('.cmd-cat').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.cmd-list').forEach(l => l.classList.remove('active'));
+    document.querySelectorAll('.cmd-panel-title').forEach(t => t.classList.remove('active'));
+    cat.classList.add('active');
+    document.getElementById('list-' + key).classList.add('active');
+    document.getElementById('title-' + key).classList.add('active');
+  });
+});
+
+/* ── FAQ ACCORDION ── */
+document.querySelectorAll('.faq-q').forEach(q => {
+  q.addEventListener('click', () => {
+    const item = q.parentElement;
+    const isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  });
+});
+
+/* ── SCROLL REVEAL ── */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+/* ── TYPEWRITER LOOP ── */
+const phrases = [
+  'Play Arijit Singh songs...',
+  'Open Chrome browser...',
+  'Alarm 07:30 set karo...',
+  'Screenshot le lo...',
+  'Volume up karo...',
+  'Calculate √144...',
+  'Search Python tutorial...',
+  'Aaj ki date batao...',
+];
+let pi = 0, ci = 0, deleting = false;
+const typEl = document.querySelector('.cap-bar-text');
+function typeLoop() {
+  const phrase = phrases[pi];
+  if (!deleting) {
+    typEl.textContent = phrase.slice(0, ++ci);
+    if (ci === phrase.length) { deleting = true; setTimeout(typeLoop, 1800); return; }
+  } else {
+    typEl.textContent = phrase.slice(0, --ci);
+    if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; }
+  }
+  setTimeout(typeLoop, deleting ? 40 : 70);
+}
+typeLoop();
+
+/* ── COUNTER ANIMATION ── */
+document.querySelectorAll('.stat-num').forEach(el => {
+  const target = parseInt(el.textContent);
+  if (isNaN(target) || target === 0) return;
+  let current = 0;
+  const step = Math.ceil(target / 40);
+  const timer = setInterval(() => {
+    current = Math.min(current + step, target);
+    el.textContent = current + (el.textContent.includes('+') ? '+' : '');
+    if (current >= target) clearInterval(timer);
+  }, 30);
+});
+</script>
+</body>
+</html>
  
