@@ -3,9 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ITI Kuber Nagar - Job Placement</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>ITI Kuber Nagar | Official Job Placement Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #1a4a6f;
+            --primary-dark: #0f2b3d;
+            --primary-light: #2c6e9e;
+            --secondary: #ff6b35;
+            --secondary-dark: #e55a2b;
+            --success: #2e7d32;
+            --warning: #ed6c02;
+            --info: #0288d1;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -14,188 +39,471 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: #f5f7fa;
-            color: #1a2c3e;
+            background: linear-gradient(135deg, var(--gray-50) 0%, #ffffff 100%);
+            color: var(--gray-800);
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(26,74,111,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveDots 60s linear infinite;
+        }
+
+        @keyframes moveDots {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
         }
 
         /* Header */
         .header {
-            background: linear-gradient(135deg, #0f2b3d, #1a4a6f);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
             color: white;
-            padding: 2rem;
+            padding: 2rem 2rem 4rem;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: float 15s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(30px, -20px) scale(1.05); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 1s ease-out;
         }
 
         .header h1 {
-            font-size: 1.8rem;
+            font-size: 2.5rem;
+            font-weight: 800;
             margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .header h1 i {
+            margin-right: 10px;
         }
 
         .header p {
-            opacity: 0.9;
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-bottom: 1rem;
         }
 
-        /* Stats */
+        .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+        }
+
+        /* Stats Section */
         .stats {
             max-width: 1200px;
-            margin: -1.5rem auto 2rem;
+            margin: -2rem auto 2rem;
             padding: 0 1rem;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            position: relative;
+            z-index: 2;
         }
 
         .stat-card {
             background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
+            padding: 1.75rem;
+            border-radius: 20px;
             text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: var(--shadow-lg);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
         }
 
         .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #1a4a6f;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            margin-bottom: 0.5rem;
         }
 
         .stat-label {
-            color: #666;
-            font-size: 0.85rem;
-            margin-top: 0.25rem;
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            font-weight: 500;
         }
 
-        /* Search */
+        /* Search Section */
         .search-section {
             max-width: 1200px;
-            margin: 0 auto 1.5rem;
+            margin: 0 auto 2rem;
             padding: 0 1rem;
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
         }
 
         .search-box {
             background: white;
-            padding: 1rem;
-            border-radius: 12px;
+            padding: 1.25rem;
+            border-radius: 20px;
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-200);
+        }
+
+        .search-input-group {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-input-group i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
         }
 
         .search-box input, .search-box select {
-            flex: 1;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 2.5rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
             font-size: 0.9rem;
             font-family: inherit;
+            transition: all 0.2s;
+            background: var(--gray-50);
         }
 
-        /* Table */
+        .search-box input:focus, .search-box select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(26, 74, 111, 0.1);
+            background: white;
+        }
+
+        /* Table Container */
         .table-container {
             max-width: 1200px;
             margin: 0 auto 2rem;
             padding: 0 1rem;
-            overflow-x: auto;
+            animation: fadeInUp 0.8s ease-out 0.3s backwards;
+        }
+
+        .table-wrapper {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--gray-200);
+        }
+
+        .table-header {
+            padding: 1.25rem 1.5rem;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .table-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .table-header h3 i {
+            color: var(--primary);
+            margin-right: 0.5rem;
+        }
+
+        .export-btn {
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 1px solid var(--gray-300);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            color: var(--gray-700);
+        }
+
+        .export-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
         }
 
         table {
             width: 100%;
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
             border-collapse: collapse;
         }
 
         th {
-            background: #f8f9fa;
-            padding: 1rem;
+            background: var(--gray-50);
+            padding: 1rem 1.5rem;
             text-align: left;
             font-weight: 600;
-            color: #1a4a6f;
-            border-bottom: 2px solid #e9ecef;
+            color: var(--gray-700);
+            border-bottom: 2px solid var(--gray-200);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         td {
-            padding: 1rem;
-            border-bottom: 1px solid #e9ecef;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
+            transition: background 0.2s;
         }
 
-        tr:hover {
-            background: #f8f9fa;
+        tr:hover td {
+            background: var(--gray-50);
         }
 
         .salary-badge {
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            color: var(--success);
+            padding: 0.375rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .trade-badge {
+            background: linear-gradient(135deg, #e3f2fd, #bbdef5);
+            color: var(--info);
+            padding: 0.375rem 1rem;
+            border-radius: 50px;
             font-size: 0.85rem;
             font-weight: 500;
             display: inline-block;
         }
 
-        .trade-badge {
-            background: #e3f2fd;
-            color: #1565c0;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            display: inline-block;
+        .company-name {
+            font-weight: 700;
+            color: var(--primary);
         }
 
+        /* Loading & Error States */
         .loading, .error {
             text-align: center;
-            padding: 3rem;
-            color: #666;
+            padding: 4rem;
         }
 
-        .error button {
-            margin-top: 1rem;
-            padding: 0.5rem 1.5rem;
-            background: #1a4a6f;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
         }
 
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: white;
+            border-radius: 20px;
+        }
+
+        .error i {
+            font-size: 3rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+        }
+
+        /* Footer */
         .footer {
+            background: var(--gray-800);
+            color: var(--gray-400);
+            padding: 2rem;
             text-align: center;
-            padding: 1.5rem;
-            color: #666;
-            font-size: 0.8rem;
-            border-top: 1px solid #e9ecef;
+            margin-top: 3rem;
         }
 
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer p {
+            margin: 0.5rem 0;
+        }
+
+        .footer a {
+            color: var(--gray-300);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer a:hover {
+            color: var(--secondary);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
             th, td {
-                padding: 0.75rem;
+                padding: 0.75rem 1rem;
                 font-size: 0.85rem;
             }
-            .header h1 {
-                font-size: 1.4rem;
+            
+            .stat-number {
+                font-size: 1.8rem;
             }
+            
+            .table-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--gray-100);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--gray-400);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
         }
     </style>
 </head>
 <body>
+    <div class="bg-animation"></div>
+
     <div class="header">
-        <h1>🏢 ITI Kuber Nagar</h1>
-        <p>Job Placement Portal</p>
+        <div class="header-content">
+            <h1><i class="fas fa-graduation-cap"></i> ITI Kuber Nagar</h1>
+            <p>Empowering Careers Through Excellence</p>
+            <div class="badge">
+                <i class="fas fa-chart-line"></i> Real-time Placement Updates
+            </div>
+        </div>
     </div>
 
-    <div class="stats" id="stats">
+    <div class="stats" id="stats" style="display: none;">
         <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-building"></i></div>
             <div class="stat-number" id="totalCompanies">0</div>
-            <div class="stat-label">Total Companies</div>
+            <div class="stat-label">Total Placements</div>
         </div>
         <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
             <div class="stat-number" id="avgSalary">--</div>
-            <div class="stat-label">Avg. Salary</div>
+            <div class="stat-label">Average Package</div>
         </div>
         <div class="stat-card">
+            <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
             <div class="stat-number" id="upcomingDrives">0</div>
             <div class="stat-label">Upcoming Drives</div>
         </div>
@@ -203,84 +511,151 @@
 
     <div class="search-section">
         <div class="search-box">
-            <input type="text" id="search" placeholder="🔍 Search company, trade or location...">
-            <select id="tradeFilter">
-                <option value="">All Trades</option>
-            </select>
-            <select id="locationFilter">
-                <option value="">All Locations</option>
-            </select>
+            <div class="search-input-group" style="flex: 2;">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search" placeholder="Search by company, trade, or location...">
+            </div>
+            <div class="search-input-group">
+                <i class="fas fa-briefcase"></i>
+                <select id="tradeFilter">
+                    <option value="">All Trades</option>
+                </select>
+            </div>
+            <div class="search-input-group">
+                <i class="fas fa-map-marker-alt"></i>
+                <select id="locationFilter">
+                    <option value="">All Locations</option>
+                </select>
+            </div>
         </div>
     </div>
 
     <div class="table-container">
-        <div id="tableContent">
-            <div class="loading">Loading placement data...</div>
+        <div class="table-wrapper">
+            <div class="table-header">
+                <h3><i class="fas fa-list-ul"></i> Placement Opportunities</h3>
+                <button class="export-btn" onclick="exportToCSV()">
+                    <i class="fas fa-download"></i> Export to CSV
+                </button>
+            </div>
+            <div id="tableContent">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading placement data...</p>
+                </div>
+            </div>
         </div>
     </div>
 
     <div class="footer">
-        <p>Data updated in real-time from Google Sheets</p>
+        <div class="footer-content">
+            <p><i class="fas fa-sync-alt"></i> Data updated in real-time from Google Sheets</p>
+            <p>Last updated: <span id="lastUpdated">--</span></p>
+            <p style="margin-top: 1rem;">
+                <i class="fas fa-envelope"></i> contact@itikubernagar.edu.in &nbsp;|&nbsp;
+                <i class="fas fa-phone"></i> +91 1234567890
+            </p>
+        </div>
     </div>
 
     <script>
-        // REPLACE THIS WITH YOUR APPS SCRIPT URL
-        const SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
+        // Your Google Apps Script Web App URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzUEtY060zqiUmVD02r9StpPslqtAH9z4rIUPGEqcjCiTbqMSAfo0Bzv_p-XBgmxVI/exec';
         
         let placements = [];
+        let lastUpdateTime = null;
 
         async function loadData() {
+            const tableContent = document.getElementById('tableContent');
+            tableContent.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading placement data...</p>
+                </div>
+            `;
+            
             try {
-                const response = await fetch(SCRIPT_URL);
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'GET',
+                    mode: 'cors',
+                    cache: 'no-cache'
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
                 const data = await response.json();
                 
                 if (data.success) {
-                    placements = data.placements;
+                    placements = data.placements || [];
+                    lastUpdateTime = data.lastUpdated || new Date().toLocaleString();
+                    
                     updateStats();
                     updateFilters();
                     renderTable();
+                    
                     document.getElementById('stats').style.display = 'grid';
+                    document.getElementById('lastUpdated').textContent = lastUpdateTime;
                 } else {
-                    throw new Error(data.error);
+                    throw new Error(data.error || 'Unknown error occurred');
                 }
             } catch (error) {
-                document.getElementById('tableContent').innerHTML = `
+                console.error('Error:', error);
+                tableContent.innerHTML = `
                     <div class="error">
-                        <p>❌ Unable to load data</p>
-                        <p style="font-size: 0.85rem;">Make sure your Google Sheet has headers: Sr. No., Company, Salary Package, Trade, Location, Date</p>
-                        <button onclick="loadData()">Retry</button>
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">Unable to load data</p>
+                        <p style="font-size: 0.85rem; color: var(--gray-500);">${error.message}</p>
+                        <button onclick="loadData()" style="margin-top: 1rem; padding: 0.5rem 1.5rem; background: var(--primary); color: white; border: none; border-radius: 10px; cursor: pointer;">
+                            <i class="fas fa-redo-alt"></i> Retry
+                        </button>
                     </div>
                 `;
+                document.getElementById('stats').style.display = 'none';
             }
         }
 
         function updateStats() {
+            // Total placements
             document.getElementById('totalCompanies').textContent = placements.length;
             
-            // Calculate average salary
+            // Average salary calculation
             let salaries = [];
             placements.forEach(p => {
-                let match = p.salary.match(/\d+(?:\.\d+)?/);
-                if (match) {
-                    let num = parseFloat(match[0]);
-                    if (p.salary.includes('Lakh')) num *= 100000;
-                    if (p.salary.includes('lakh')) num *= 100000;
-                    salaries.push(num);
+                if (p.salary && p.salary !== 'Not Disclosed') {
+                    let match = p.salary.toString().match(/\d+(?:\.\d+)?/);
+                    if (match) {
+                        let num = parseFloat(match[0]);
+                        if (p.salary.toString().toLowerCase().includes('lakh')) {
+                            num *= 100000;
+                        }
+                        salaries.push(num);
+                    }
                 }
             });
             
             if (salaries.length > 0) {
                 let avg = salaries.reduce((a,b) => a+b, 0) / salaries.length;
-                let avgLakhs = (avg / 100000).toFixed(1);
-                document.getElementById('avgSalary').innerHTML = `₹${avgLakhs}L`;
+                if (avg >= 100000) {
+                    let avgLakhs = (avg / 100000).toFixed(1);
+                    document.getElementById('avgSalary').innerHTML = `₹${avgLakhs}L`;
+                } else {
+                    document.getElementById('avgSalary').innerHTML = `₹${Math.round(avg/1000)}K`;
+                }
+            } else {
+                document.getElementById('avgSalary').innerHTML = '--';
             }
             
-            // Count upcoming drives
+            // Upcoming drives
             let today = new Date();
+            today.setHours(0,0,0,0);
             let upcoming = placements.filter(p => {
-                if (p.date && p.date !== 'Date TBA') {
+                if (p.date && p.date !== 'Date TBA' && p.date !== 'TBD') {
                     let date = new Date(p.date);
-                    return date >= today;
+                    if (!isNaN(date.getTime())) {
+                        return date >= today;
+                    }
                 }
                 return false;
             });
@@ -292,18 +667,25 @@
             let locations = new Set();
             
             placements.forEach(p => {
-                p.trade.split(',').forEach(t => trades.add(t.trim()));
-                locations.add(p.location);
+                if (p.trade) {
+                    p.trade.split(',').forEach(t => {
+                        let trimmed = t.trim();
+                        if (trimmed) trades.add(trimmed);
+                    });
+                }
+                if (p.location && p.location !== 'TBD') {
+                    locations.add(p.location);
+                }
             });
             
             let tradeSelect = document.getElementById('tradeFilter');
             let locationSelect = document.getElementById('locationFilter');
             
             tradeSelect.innerHTML = '<option value="">All Trades</option>' + 
-                Array.from(trades).sort().map(t => `<option value="${t}">${t}</option>`).join('');
+                Array.from(trades).sort().map(t => `<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
             
             locationSelect.innerHTML = '<option value="">All Locations</option>' + 
-                Array.from(locations).sort().map(l => `<option value="${l}">${l}</option>`).join('');
+                Array.from(locations).sort().map(l => `<option value="${escapeHtml(l)}">${escapeHtml(l)}</option>`).join('');
         }
 
         function renderTable() {
@@ -313,43 +695,113 @@
             
             let filtered = placements.filter(p => {
                 let matchSearch = search === '' || 
-                    p.company.toLowerCase().includes(search) ||
-                    p.trade.toLowerCase().includes(search) ||
-                    p.location.toLowerCase().includes(search);
-                let matchTrade = trade === '' || p.trade.includes(trade);
-                let matchLocation = location === '' || p.location === location;
+                    (p.company && p.company.toLowerCase().includes(search)) ||
+                    (p.trade && p.trade.toLowerCase().includes(search)) ||
+                    (p.location && p.location.toLowerCase().includes(search));
+                let matchTrade = trade === '' || (p.trade && p.trade.includes(trade));
+                let matchLocation = location === '' || (p.location === location);
                 return matchSearch && matchTrade && matchLocation;
             });
             
+            const tableContent = document.getElementById('tableContent');
+            
             if (filtered.length === 0) {
-                document.getElementById('tableContent').innerHTML = 
-                    '<div class="error">No placements found</div>';
+                tableContent.innerHTML = `
+                    <div class="error" style="padding: 3rem;">
+                        <i class="fas fa-search" style="font-size: 3rem;"></i>
+                        <p style="margin-top: 1rem;">No placements found matching your criteria</p>
+                    </div>
+                `;
                 return;
             }
             
             let html = `
-                <table>
-                    <thead>
-                        <tr><th>Sr. No.</th><th>Company</th><th>Salary Package</th><th>Trade</th><th>Location</th><th>Date</th></tr>
-                    </thead>
-                    <tbody>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Sr. No.</th>
+                                <th>Company</th>
+                                <th>Salary Package</th>
+                                <th>Trade</th>
+                                <th>Location</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
             `;
             
-            filtered.forEach(p => {
+            filtered.forEach((p, idx) => {
                 html += `
                     <tr>
-                        <td>${p.srNo}</td>
-                        <td><strong>${p.company}</strong></td>
-                        <td><span class="salary-badge">${p.salary}</span></td>
-                        <td><span class="trade-badge">${p.trade}</span></td>
-                        <td>📍 ${p.location}</td>
-                        <td>📅 ${p.date}</td>
+                        <td>${escapeHtml(p.srNo || idx + 1)}</td>
+                        <td><span class="company-name">${escapeHtml(p.company || '')}</span></td>
+                        <td><span class="salary-badge">${escapeHtml(p.salary || 'Not Disclosed')}</span></td>
+                        <td><span class="trade-badge">${escapeHtml(p.trade || 'All Trades')}</span></td>
+                        <td><i class="fas fa-map-marker-alt" style="color: var(--gray-400); margin-right: 5px;"></i> ${escapeHtml(p.location || 'TBD')}</td>
+                        <td><i class="fas fa-calendar" style="color: var(--gray-400); margin-right: 5px;"></i> ${escapeHtml(p.date || 'Date TBA')}</td>
                     </tr>
                 `;
             });
             
-            html += '</tbody></table>';
-            document.getElementById('tableContent').innerHTML = html;
+            html += '</tbody></table></div>';
+            tableContent.innerHTML = html;
+        }
+
+        function exportToCSV() {
+            let search = document.getElementById('search').value.toLowerCase();
+            let trade = document.getElementById('tradeFilter').value;
+            let location = document.getElementById('locationFilter').value;
+            
+            let filtered = placements.filter(p => {
+                let matchSearch = search === '' || 
+                    (p.company && p.company.toLowerCase().includes(search)) ||
+                    (p.trade && p.trade.toLowerCase().includes(search)) ||
+                    (p.location && p.location.toLowerCase().includes(search));
+                let matchTrade = trade === '' || (p.trade && p.trade.includes(trade));
+                let matchLocation = location === '' || (p.location === location);
+                return matchSearch && matchTrade && matchLocation;
+            });
+            
+            if (filtered.length === 0) {
+                alert('No data to export');
+                return;
+            }
+            
+            const headers = ['Sr. No.', 'Company', 'Salary Package', 'Trade', 'Location', 'Date'];
+            const rows = filtered.map(p => [
+                p.srNo || '',
+                p.company || '',
+                p.salary || '',
+                p.trade || '',
+                p.location || '',
+                p.date || ''
+            ]);
+            
+            const csvContent = [headers, ...rows]
+                .map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+                .join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `placement_data_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
         }
 
         // Event listeners
@@ -359,7 +811,7 @@
         
         // Load data
         loadData();
-        setInterval(loadData, 300000); // Refresh every 5 minutes
+        setInterval(loadData, 300000);
     </script>
 </body>
 </html>
