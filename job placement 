@@ -1,1 +1,624 @@
-h
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ITI Kuber Nagar - Job Placement Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9edf2 100%);
+            min-height: 100vh;
+            color: #1a2c3e;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0f2b3d 0%, #1a4a6f 100%);
+            color: white;
+            padding: 2rem 2rem 4rem 2rem;
+            border-radius: 0 0 30px 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 500px;
+            height: 500px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .title h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .title p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .last-updated {
+            background: rgba(255,255,255,0.15);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            max-width: 1400px;
+            margin: -2rem auto 2rem auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #1e88e5, #0d47a1);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem auto;
+        }
+
+        .stat-icon i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #0f2b3d;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Filters */
+        .filters-section {
+            max-width: 1400px;
+            margin: 0 auto 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .filters-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.25rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9aa6b5;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #1e88e5;
+            box-shadow: 0 0 0 3px rgba(30,136,229,0.1);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 0.8rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #1e88e5;
+        }
+
+        /* Table Section */
+        .table-section {
+            max-width: 1400px;
+            margin: 0 auto 3rem auto;
+            padding: 0 2rem;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 24px;
+            overflow-x: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 800px;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        th {
+            padding: 1.25rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+        }
+
+        tr:hover {
+            background: #fafcff;
+        }
+
+        .company-name {
+            font-weight: 600;
+            color: #0f2b3d;
+        }
+
+        .salary-badge {
+            background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+            color: #2e7d32;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .trade-badge {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .location-text {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .location-text i {
+            color: #9aa6b5;
+            font-size: 0.8rem;
+        }
+
+        .date-text {
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 4rem;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #1e88e5;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #6c757d;
+            font-size: 0.85rem;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1.5rem;
+            }
+            .title h1 {
+                font-size: 1.5rem;
+            }
+            .stats-container, .filters-section, .table-section {
+                padding: 0 1rem;
+            }
+            .stat-number {
+                font-size: 1.75rem;
+            }
+            th, td {
+                padding: 0.75rem;
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo-area">
+                <div class="title">
+                    <h1><i class="fas fa-briefcase"></i> ITI Kuber Nagar</h1>
+                    <p>Job Placement Portal • Connecting Talent with Opportunity</p>
+                </div>
+                <div class="last-updated" id="lastUpdated">
+                    <i class="fas fa-sync-alt"></i> Loading...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-container">
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-building"></i></div>
+                <div class="stat-number" id="totalCompanies">0</div>
+                <div class="stat-label">Total Companies</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-chart-line"></i></div>
+                <div class="stat-number" id="avgSalary">--</div>
+                <div class="stat-label">Avg. Salary (p.a.)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-calendar-week"></i></div>
+                <div class="stat-number" id="upcomingDrives">0</div>
+                <div class="stat-label">Upcoming Drives</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="filters-section">
+        <div class="filters-card">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search by company, trade, or location...">
+            </div>
+            <div class="filter-group">
+                <select id="tradeFilter" class="filter-select">
+                    <option value="">All Trades</option>
+                </select>
+                <select id="locationFilter" class="filter-select">
+                    <option value="">All Locations</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-section">
+        <div class="table-container">
+            <div id="tableContent">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Fetching latest placement data...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p><i class="fas fa-graduation-cap"></i> ITI Kuber Nagar - Placement Cell | Data updated in real-time from Google Sheets</p>
+    </div>
+
+    <script>
+        // Replace with your actual Google Apps Script Web App URL
+        const SCRIPT_URL = 'YOUR_SCRIPT_URL';
+        
+        let allPlacements = [];
+        
+        async function fetchData() {
+            try {
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+                
+                if (data.success) {
+                    allPlacements = data.placements;
+                    updateLastUpdated(data.lastUpdated);
+                    updateStats(allPlacements);
+                    populateFilters(allPlacements);
+                    renderTable(allPlacements);
+                } else {
+                    throw new Error(data.error || 'Failed to load data');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('tableContent').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h3>Unable to Load Data</h3>
+                        <p>Please check your connection or try again later.</p>
+                        <button onclick="fetchData()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #1e88e5; color: white; border: none; border-radius: 8px; cursor: pointer;">Retry</button>
+                    </div>
+                `;
+            }
+        }
+        
+        function updateLastUpdated(dateStr) {
+            const element = document.getElementById('lastUpdated');
+            if (dateStr) {
+                element.innerHTML = `<i class="fas fa-sync-alt"></i> Last updated: ${dateStr}`;
+            } else {
+                element.innerHTML = `<i class="fas fa-sync-alt"></i> Live Data`;
+            }
+        }
+        
+        function updateStats(placements) {
+            const total = placements.length;
+            document.getElementById('totalCompanies').textContent = total;
+            
+            // Calculate average salary (extract numbers from salary strings)
+            let salaries = [];
+            placements.forEach(p => {
+                if (p.salary && p.salary !== 'Not Disclosed') {
+                    const match = p.salary.toString().match(/\d+(?:\.\d+)?/);
+                    if (match) {
+                        let num = parseFloat(match[0]);
+                        if (p.salary.toString().toLowerCase().includes('lakh') || p.salary.toString().toLowerCase().includes('lac')) {
+                            num = num * 100000;
+                        } else if (p.salary.toString().toLowerCase().includes('k')) {
+                            num = num * 1000;
+                        }
+                        salaries.push(num);
+                    }
+                }
+            });
+            
+            if (salaries.length > 0) {
+                const avg = salaries.reduce((a, b) => a + b, 0) / salaries.length;
+                const avgInLakhs = (avg / 100000).toFixed(1);
+                document.getElementById('avgSalary').innerHTML = `₹${avgInLakhs}L <span style="font-size: 0.75rem;">p.a.</span>`;
+            } else {
+                document.getElementById('avgSalary').textContent = '--';
+            }
+            
+            // Count upcoming drives (dates in future)
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const upcoming = placements.filter(p => {
+                if (p.date && p.date !== 'Date TBA') {
+                    const dateMatch = p.date.match(/\d{1,2}\s+\w+\s+\d{4}/);
+                    if (dateMatch) {
+                        const driveDate = new Date(dateMatch[0]);
+                        return driveDate >= today;
+                    }
+                }
+                return false;
+            });
+            document.getElementById('upcomingDrives').textContent = upcoming.length;
+        }
+        
+        function populateFilters(placements) {
+            const trades = new Set();
+            const locations = new Set();
+            
+            placements.forEach(p => {
+                if (p.trade && p.trade !== 'All Trades') {
+                    p.trade.split(',').forEach(t => trades.add(t.trim()));
+                }
+                if (p.location && p.location !== 'TBD') {
+                    locations.add(p.location);
+                }
+            });
+            
+            const tradeSelect = document.getElementById('tradeFilter');
+            const locationSelect = document.getElementById('locationFilter');
+            
+            tradeSelect.innerHTML = '<option value="">All Trades</option>' + 
+                Array.from(trades).sort().map(t => `<option value="${t}">${t}</option>`).join('');
+            
+            locationSelect.innerHTML = '<option value="">All Locations</option>' + 
+                Array.from(locations).sort().map(l => `<option value="${l}">${l}</option>`).join('');
+        }
+        
+        function filterPlacements() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const tradeFilter = document.getElementById('tradeFilter').value;
+            const locationFilter = document.getElementById('locationFilter').value;
+            
+            const filtered = allPlacements.filter(p => {
+                const matchesSearch = searchTerm === '' || 
+                    p.company.toLowerCase().includes(searchTerm) ||
+                    p.trade.toLowerCase().includes(searchTerm) ||
+                    p.location.toLowerCase().includes(searchTerm);
+                
+                const matchesTrade = tradeFilter === '' || p.trade.includes(tradeFilter);
+                const matchesLocation = locationFilter === '' || p.location === locationFilter;
+                
+                return matchesSearch && matchesTrade && matchesLocation;
+            });
+            
+            renderTable(filtered);
+        }
+        
+        function renderTable(placements) {
+            const container = document.getElementById('tableContent');
+            
+            if (placements.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No placements found</h3>
+                        <p>Try adjusting your filters or check back later for new opportunities.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            let tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Sr. No.</th>
+                            <th>Company</th>
+                            <th>Salary Package</th>
+                            <th>Trade(s)</th>
+                            <th>Location</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            placements.forEach(p => {
+                tableHTML += `
+                    <tr>
+                        <td>${p.srNo || p.id}</td>
+                        <td class="company-name"><i class="fas fa-building" style="margin-right: 0.5rem; color: #1e88e5;"></i> ${escapeHtml(p.company)}</td>
+                        <td><span class="salary-badge">${escapeHtml(p.salary)}</span></td>
+                        <td><span class="trade-badge">${escapeHtml(p.trade)}</span></td>
+                        <td class="location-text"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(p.location)}</td>
+                        <td class="date-text"><i class="far fa-calendar-alt" style="margin-right: 0.5rem;"></i> ${escapeHtml(p.date)}</td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = tableHTML;
+        }
+        
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.toString()
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+        
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', filterPlacements);
+        document.getElementById('tradeFilter').addEventListener('change', filterPlacements);
+        document.getElementById('locationFilter').addEventListener('change', filterPlacements);
+        
+        // Auto-refresh every 5 minutes
+        fetchData();
+        setInterval(fetchData, 300000);
+    </script>
+</body>
+</html>
