@@ -1,52 +1,64 @@
-function doGet() {
-  return ContentService.createTextOutput(JSON.stringify(getSheetData()))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
 function getSheetData() {
   try {
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    // Add debugging
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getActiveSheet();
+    
+    // Log sheet name
+    console.log("Sheet name: " + sheet.getName());
+    
     var data = sheet.getDataRange().getValues();
     
+    // Log data structure
+    console.log("Data rows: " + data.length);
+    console.log("Headers: " + JSON.stringify(data[0]));
+    
     if (data.length <= 1) {
-      return { success: true, placements: [], total: 0 };
+      return { success: true, placements: [], total: 0, debug: "No data rows" };
     }
     
     var placements = [];
-    var headers = data[0];
+    var headers = data[0].map(h => String(h || "").trim());
     
-    // Find column indices - matching your headers
-    var srIndex = headers.indexOf("Sr. No.");
-    var companyIndex = headers.indexOf("Company");
-    var salaryIndex = headers.indexOf("Salary Package");
-    var tradeIndex = headers.indexOf("Trade");
-    var locationIndex = headers.indexOf("Location");
-    var dateIndex = headers.indexOf("Date");
+    // Better column detection with case-insensitive matching
+    function findColumnIndex(possibleNames) {
+      for (var i = 0; i < headers.length; i++) {
+        var header = headers[i].toLowerCase();
+        for (var j = 0; j < possibleNames.length; j++) {
+          if (header === possibleNames[j].toLowerCase()) {
+            return i;
+          }
+        }
+      }
+      return -1;
+    }
     
-    // If not found, try alternative names
-    if (srIndex === -1) srIndex = headers.indexOf("s.r");
-    if (companyIndex === -1) companyIndex = headers.indexOf("COMPANY");
-    if (salaryIndex === -1) salaryIndex = headers.indexOf("Salary");
-    if (tradeIndex === -1) tradeIndex = headers.indexOf("trade");
-    if (locationIndex === -1) locationIndex = headers.indexOf("location");
-    if (dateIndex === -1) dateIndex = headers.indexOf("date");
+    var srIndex = findColumnIndex(["Sr. No.", "Sr No", "Sr.No", "s.r", "serial number"]);
+    var companyIndex = findColumnIndex(["Company", "COMPANY", "company name"]);
+    var salaryIndex = findColumnIndex(["Salary Package", "Salary", "package", "salary"]);
+    var tradeIndex = findColumnIndex(["Trade", "trade", "trades"]);
+    var locationIndex = findColumnIndex(["Location", "location", "loc"]);
+    var dateIndex = findColumnIndex(["Date", "date", "placement date"]);
+    
+    console.log("Found indices - Sr: " + srIndex + ", Company: " + companyIndex + ", Salary: " + salaryIndex);
     
     // Process each row
     for (var i = 1; i < data.length; i++) {
       var row = data[i];
       
-      // Skip empty rows
-      if (!row[companyIndex] || row[companyIndex].toString().trim() === "") {
+      // Check if row has data
+      var companyValue = companyIndex !== -1 ? row[companyIndex] : "";
+      if (!companyValue || companyValue.toString().trim() === "") {
         continue;
       }
       
       placements.push({
-        srNo: row[srIndex] || i,
-        company: row[companyIndex] || "",
-        salary: row[salaryIndex] || "Not Disclosed",
-        trade: row[tradeIndex] || "All Trades",
-        location: row[locationIndex] || "TBD",
-        date: formatDate(row[dateIndex])
+        srNo: srIndex !== -1 ? row[srIndex] : i,
+        company: companyValue.toString(),
+        salary: salaryIndex !== -1 ? row[salaryIndex] : "Not Disclosed",
+        trade: tradeIndex !== -1 ? row[tradeIndex] : "All Trades",
+        location: locationIndex !== -1 ? row[locationIndex] : "TBD",
+        date: formatDate(dateIndex !== -1 ? row[dateIndex] : null)
       });
     }
     
@@ -54,32 +66,17 @@ function getSheetData() {
       success: true,
       placements: placements,
       total: placements.length,
-      lastUpdated: new Date().toLocaleString()
+      lastUpdated: new Date().toLocaleString(),
+      debug: "Processed " + placements.length + " placements"
     };
     
   } catch (error) {
     return {
       success: false,
       error: error.toString(),
+      stack: error.stack,
       placements: [],
       total: 0
     };
-  }
-}
-
-function formatDate(dateValue) {
-  if (!dateValue) return "Date TBA";
-  
-  try {
-    if (dateValue instanceof Date) {
-      return dateValue.toLocaleDateString('en-IN');
-    }
-    var date = new Date(dateValue);
-    if (!isNaN(date.getTime())) {
-      return date.toLocaleDateString('en-IN');
-    }
-    return dateValue.toString();
-  } catch (e) {
-    return dateValue.toString();
   }
 }
