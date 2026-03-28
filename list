@@ -1,0 +1,83 @@
+function doGet() {
+  return ContentService.createTextOutput(JSON.stringify(getSheetData()))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+function getSheetData() {
+  try {
+    var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    var data = sheet.getDataRange().getValues();
+    
+    if (data.length <= 1) {
+      return { success: true, placements: [], total: 0 };
+    }
+    
+    var placements = [];
+    var headers = data[0];
+    
+    // Find column indices
+    var srIndex = headers.indexOf("s.r") !== -1 ? headers.indexOf("s.r") : 
+                  (headers.indexOf("Sr. No.") !== -1 ? headers.indexOf("Sr. No.") : 0);
+    var companyIndex = headers.indexOf("Company") !== -1 ? headers.indexOf("Company") : 1;
+    var salaryIndex = headers.indexOf("Salary") !== -1 ? headers.indexOf("Salary") : 2;
+    var tradeIndex = headers.indexOf("trade") !== -1 ? headers.indexOf("trade") : 3;
+    var locationIndex = headers.indexOf("location") !== -1 ? headers.indexOf("location") : 4;
+    var dateIndex = headers.indexOf("date") !== -1 ? headers.indexOf("date") : 5;
+    
+    // Process data rows (skip header)
+    for (var i = 1; i < data.length; i++) {
+      var row = data[i];
+      if (row[companyIndex] && row[companyIndex].toString().trim() !== "") {
+        placements.push({
+          id: i,
+          srNo: row[srIndex] || i,
+          company: row[companyIndex],
+          salary: row[salaryIndex] || "Not Disclosed",
+          trade: row[tradeIndex] || "All Trades",
+          location: row[locationIndex] || "TBD",
+          date: formatDate(row[dateIndex])
+        });
+      }
+    }
+    
+    return {
+      success: true,
+      placements: placements,
+      total: placements.length,
+      lastUpdated: new Date().toLocaleString()
+    };
+    
+  } catch (error) {
+    return {
+      success: false,
+      error: error.toString(),
+      placements: [],
+      total: 0
+    };
+  }
+}
+
+function formatDate(dateValue) {
+  if (!dateValue) return "Date TBA";
+  
+  try {
+    if (dateValue instanceof Date) {
+      return dateValue.toLocaleDateString('en-IN', { 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric' 
+      });
+    }
+    var date = new Date(dateValue);
+    if (!isNaN(date.getTime())) {
+      return date.toLocaleDateString('en-IN', { 
+        day: 'numeric', 
+        month: 'long', 
+        year: 'numeric' 
+      });
+    }
+    return dateValue.toString();
+  } catch (e) {
+    return dateValue.toString();
+  }
+}
