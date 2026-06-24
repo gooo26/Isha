@@ -1,0 +1,71 @@
+import ollama
+import pyttsx3
+import re
+
+def run_chatbot():
+    # TTS Engine ko initialize karna
+    engine = pyttsx3.init()
+    
+    # Model ka naam
+    MODEL_NAME = "glm-5.2:cloud"
+    
+    # Chat history store karne ke liye list
+    messages = [
+        {"role": "system", "content": "You are a helpful, witty, and smart AI assistant."}
+    ]
+    
+    print(f"--- Chatbot Started with {MODEL_NAME} ---")
+    print("Type 'exit' or 'quit' to end the chat.\n")
+    
+    while True:
+        user_input = input("You: ")
+        
+        if user_input.lower() in ['exit', 'quit']:
+            print("Chatbot: Goodbye!")
+            engine.say("Goodbye!")
+            engine.runAndWait()
+            break
+            
+        if not user_input.strip():
+            continue
+            
+        messages.append({"role": "user", "content": user_input})
+        
+        try:
+            print("Bot thinking...", end="\r")
+            
+            response_stream = ollama.chat(
+                model=MODEL_NAME,
+                messages=messages,
+                stream=True
+            )
+            
+            print("Bot: ", end="", flush=True)
+            full_response = ""
+            current_sentence = ""
+            
+            for chunk in response_stream:
+                content = chunk['message']['content']
+                print(content, end="", flush=True)
+                full_response += content
+                current_sentence += content
+                
+                # Agar sentence khatam ho jaye (., ?, !), toh use bolna shuru karein
+                if any(char in content for char in ['.', '?', '!']):
+                    engine.say(current_sentence.strip())
+                    engine.runAndWait()
+                    current_sentence = "" # Sentence clear karein agle ke liye
+            
+            # Agar aakhiri ka thoda text bina punctuation ke bacha ho
+            if current_sentence.strip():
+                engine.say(current_sentence.strip())
+                engine.runAndWait()
+                
+            print() # New line ke liye
+            messages.append({"role": "assistant", "content": full_response})
+            
+        except Exception as e:
+            print(f"\nAn error occurred: {e}")
+
+if __name__ == "__main__":
+    run_chatbot()
